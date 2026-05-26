@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCF ↔ Excel Contact Converter</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="bg-glow-secondary"></div>
+    
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header animate-fade-in">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fa-solid fa-address-book"></i></div>
+                <div class="logo-text">
+                    <h1>vCard ↔ Excel</h1>
+                    <p>Premium Contact Converter</p>
+                </div>
+            </div>
+            <div class="header-tag">Local Converter</div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="workspace animate-slide-up">
+            <!-- Navigation Tabs -->
+            <div class="tabs-container">
+                <button class="tab-btn active" id="tab-vcf2excel" onclick="switchTab('vcf2excel')">
+                    <i class="fa-solid fa-file-export"></i> VCF to Excel
+                </button>
+                <button class="tab-btn" id="tab-excel2vcf" onclick="switchTab('excel2vcf')">
+                    <i class="fa-solid fa-file-import"></i> Excel to VCF
+                </button>
+            </div>
+
+            <!-- Content Card -->
+            <div class="glass-card">
+                <!-- Section 1: VCF to Excel -->
+                <section id="section-vcf2excel" class="tab-content active">
+                    <div class="section-header">
+                        <h2>Convert vCard (.vcf) to Excel Sheet</h2>
+                        <p>Upload a VCF file exported from Android, iOS, or Outlook. You'll be able to preview, search, edit, and add contacts before exporting.</p>
+                    </div>
+
+                    <!-- Dropzone -->
+                    <div class="dropzone" id="vcf-dropzone">
+                        <input type="file" id="vcf-file-input" accept=".vcf" style="display: none;">
+                        <div class="dropzone-content">
+                            <div class="upload-icon-wrapper">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <h3>Drag & drop VCF file here</h3>
+                            <p>or click to browse from files</p>
+                            <span class="file-spec">Maximum file size: 16 MB</span>
+                        </div>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="loading-state hidden" id="vcf-loading">
+                        <div class="spinner"></div>
+                        <p>Parsing vCard data and extracting fields...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div class="alert alert-error hidden" id="vcf-error">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span class="alert-message">Error message goes here</span>
+                        <button class="alert-close" onclick="hideElement('vcf-error')">&times;</button>
+                    </div>
+
+                    <!-- Success State & Table Preview -->
+                    <div class="preview-container hidden" id="vcf-preview-area">
+                        <div class="preview-actions">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="contact-search" placeholder="Search contacts..." oninput="filterContactsTable()">
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-secondary" onclick="addContactRow()">
+                                    <i class="fa-solid fa-user-plus"></i> Add Contact
+                                </button>
+                                <button class="btn btn-primary" onclick="exportToExcel()">
+                                    <i class="fa-solid fa-file-excel"></i> Export to Excel
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="contacts-table-wrapper">
+                            <table class="contacts-table" id="contacts-preview-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name Fields</th>
+                                        <th>Organization / Job</th>
+                                        <th>Phones</th>
+                                        <th>Emails</th>
+                                        <th>Addresses</th>
+                                        <th>Notes</th>
+                                        <th style="width: 80px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contacts-table-body">
+                                    <!-- Dynamic rows will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-summary" id="contacts-summary">
+                            Showing 0 of 0 contacts
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Excel to VCF -->
+                <section id="section-excel2vcf" class="tab-content">
+                    <div class="section-header">
+                        <h2>Convert Excel Sheet to vCard (.vcf)</h2>
+                        <p>Upload your contact spreadsheet (.xlsx or .xls). You can map your custom columns to standard VCF contact properties in the interactive mapping interface below.</p>
+                    </div>
+
+                    <!-- Dropzone -->
+                    <div class="dropzone" id="excel-dropzone">
+                        <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display: none;">
+                        <div class="dropzone-content">
+                            <div class="upload-icon-wrapper secondary">
+                                <i class="fa-solid fa-file-excel"></i>
+                            </div>
+                            <h3>Drag & drop Excel file here</h3>
+                            <p>or click to browse from files</p>
+                            <span class="file-spec">Supports .xlsx and .xls formats up to 16MB</span>
+                        </div>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="loading-state hidden" id="excel-loading">
+                        <div class="spinner"></div>
+                        <p>Reading Excel headers and scanning data...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div class="alert alert-error hidden" id="excel-error">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span class="alert-message">Error message goes here</span>
+                        <button class="alert-close" onclick="hideElement('excel-error')">&times;</button>
+                    </div>
+
+                    <!-- Interactive Mapper Area -->
+                    <div class="mapper-container hidden" id="excel-mapper-area">
+                        <div class="mapper-meta">
+                            <h3><i class="fa-solid fa-network-wired"></i> Column Mapping Assistant</h3>
+                            <p>We've automatically detected potential matches. Please review and adjust the mappings. Any columns marked <strong>"Skip Column"</strong> will be ignored in the output file.</p>
+                        </div>
+
+                        <div class="mapping-table-wrapper">
+                            <table class="mapping-table">
+                                <thead>
+                                    <tr>
+                                        <th>Excel Column Header</th>
+                                        <th>Sample Data (Row 1)</th>
+                                        <th>Map to VCF Field</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mapping-table-body">
+                                    <!-- Dynamic rows will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mapper-footer-actions">
+                            <button class="btn btn-secondary" onclick="resetExcelUpload()">
+                                <i class="fa-solid fa-rotate-left"></i> Change File
+                            </button>
+                            <button class="btn btn-primary" onclick="convertExcelToVcf()">
+                                <i class="fa-solid fa-gears"></i> Convert & Download VCF
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="app-footer animate-fade-in">
+            <p>VCF ↔ Excel Converter &bull; Local server secure conversion &bull; &copy; 2026</p>
+        </footer>
+    </div>
+
+    <!-- UI Core Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
