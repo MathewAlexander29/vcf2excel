@@ -316,6 +316,9 @@ def excel_to_contacts(filepath: str, mapping: dict) -> list[dict]:
                 continue
                 
             val_str = str(val).strip()
+            # Clean up floats stored as integers (e.g. 1234567.0 -> 1234567)
+            if val_str.endswith('.0') and (isinstance(val, (float, int)) or val_str[:-2].isdigit()):
+                val_str = val_str[:-2]
             if not val_str:
                 continue
                 

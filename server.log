@@ -1,0 +1,31 @@
+2026-05-29 23:01:46,734 - __main__ - INFO - Logging to server.log initialized.
+2026-05-29 23:01:46,748 - werkzeug - WARNING -  * Debugger is active!
+2026-05-29 23:01:46,756 - werkzeug - INFO -  * Debugger PIN: 296-126-355
+2026-05-29 23:02:36,475 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:02:36] "GET / HTTP/1.1" 200 -
+2026-05-29 23:02:36,562 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:02:36] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-29 23:02:41,920 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:02:41] "GET / HTTP/1.1" 200 -
+2026-05-29 23:02:41,940 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:02:41] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-05-29 23:02:41,942 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:02:41] "GET /static/js/main.js HTTP/1.1" 200 -
+2026-05-29 23:02:46,902 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:02:46] "POST /api/excel-to-json HTTP/1.1" 200 -
+2026-05-29 23:03:16,201 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:03:16] "POST /api/excel-to-vcf HTTP/1.1" 200 -
+2026-05-29 23:14:06,105 - __main__ - INFO - Logging to server.log initialized.
+2026-05-29 23:14:06,110 - __main__ - INFO - Starting server on http://127.0.0.1:5000
+2026-05-29 23:14:06,119 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-05-29 23:14:06,119 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-29 23:14:09,539 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:14:09] "GET / HTTP/1.1" 200 -
+2026-05-29 23:14:09,598 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:14:09] "GET /static/css/style.css HTTP/1.1" 200 -
+2026-05-29 23:14:09,602 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:14:09] "GET /static/js/main.js HTTP/1.1" 200 -
+2026-05-29 23:14:10,874 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:14:10] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-05-29 23:14:17,902 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:14:17] "POST /api/excel-to-json HTTP/1.1" 200 -
+2026-05-29 23:14:35,809 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:14:35] "POST /api/excel-to-vcf HTTP/1.1" 200 -
+2026-05-29 23:14:44,291 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:14:44] "POST /api/vcf-to-json HTTP/1.1" 200 -
+2026-05-29 23:18:51,122 - __main__ - INFO - Logging to server.log initialized.
+2026-05-29 23:18:51,127 - __main__ - INFO - Starting server on http://127.0.0.1:5000
+2026-05-29 23:18:51,146 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-05-29 23:18:51,146 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-05-29 23:18:52,907 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:18:52] "GET / HTTP/1.1" 200 -
+2026-05-29 23:18:53,019 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:18:53] "GET /static/css/style.css HTTP/1.1" 200 -
+2026-05-29 23:18:53,021 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:18:53] "GET /static/js/main.js HTTP/1.1" 200 -
+2026-05-29 23:18:53,117 - werkzeug - INFO - 127.0.0.1 - - [29/May/2026 23:18:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -

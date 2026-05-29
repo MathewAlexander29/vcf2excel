@@ -1,60 +1,79 @@
 @echo off
-title VCF ↔ Excel Contact Converter
+title VCF to Excel Contact Converter
 echo ===================================================
-echo   VCF ↔ Excel Contact Converter Startup Script
+echo   VCF to Excel Contact Converter - Startup Script
 echo ===================================================
 echo.
+
+:: Change directory to the folder where this batch file is located
+cd /d "%~dp0"
 
 :: Check for Python
 where python >nul 2>nul
-if %errorlevel% neq 0 (
-    echo [ERROR] Python was not found on your system.
-    echo Please install Python (version 3.8 or newer) and add it to your PATH.
-    echo You can download it from: https://www.python.org/
-    echo.
-    pause
-    exit /b 1
-)
+if errorlevel 1 goto NoPython
+goto PythonFound
+
+:NoPython
+echo [ERROR] Python was not found on your system.
+echo Please install Python 3.8+ and add it to your PATH.
+echo Download from: https://www.python.org/
+echo.
+pause
+exit /b 1
+
+:PythonFound
+echo Python found. Checking virtual environment...
 
 :: Create Virtual Environment if it doesn't exist
-if not exist .venv (
-    echo Creating Python virtual environment (.venv)...
-    python -m venv .venv
-    if %errorlevel% neq 0 (
-        echo [ERROR] Failed to create virtual environment.
-        pause
-        exit /b 1
-    )
-)
+if exist .venv goto VenvExists
+echo Creating Python virtual environment...
+python -m venv .venv
+if not exist .venv\Scripts\activate.bat goto VenvFail
+goto VenvOk
 
-:: Activate Virtual Environment
+:VenvExists
+if not exist .venv\Scripts\activate.bat goto VenvFail
+goto VenvOk
+
+:VenvFail
+echo [ERROR] Failed to create virtual environment.
+echo Please ensure Python is installed correctly.
+pause
+exit /b 1
+
+:VenvOk
 echo Activating virtual environment...
 call .venv\Scripts\activate.bat
-if %errorlevel% neq 0 (
-    echo [ERROR] Failed to activate virtual environment.
-    pause
-    exit /b 1
-)
 
-:: Install Dependencies
-echo Installing dependencies from requirements.txt...
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-if %errorlevel% neq 0 (
-    echo [ERROR] Failed to install dependencies.
-    pause
-    exit /b 1
-)
+echo Installing dependencies...
+python -m pip install --upgrade pip --quiet
+python -m pip install -r requirements.txt --quiet
+if errorlevel 1 goto InstallFail
+goto StartServer
 
-echo.
-echo ===================================================
-echo   Starting local converter server...
-echo   Opening browser at http://127.0.0.1:5000
-echo ===================================================
-echo.
-
-:: Launch browser in 1 second, then run Flask
-start "" "http://127.0.0.1:5000"
-python app.py
-
+:InstallFail
+echo [ERROR] Failed to install required packages.
+echo Check your internet connection and try again.
 pause
+exit /b 1
+
+:StartServer
+echo.
+echo ===================================================
+echo   Starting server... browser will open shortly.
+echo   Press Ctrl+C or close this window to stop.
+echo ===================================================
+echo.
+
+python app.py
+if errorlevel 1 goto ServerError
+goto Done
+
+:ServerError
+echo.
+echo [ERROR] The server stopped unexpectedly.
+echo Check server.log for details.
+echo.
+pause
+
+:Done

@@ -368,9 +368,14 @@ function exportToExcel() {
         },
         body: JSON.stringify({ contacts: parsedContacts })
     })
-    .then(response => {
+    .then(async response => {
         if (!response.ok) {
-            throw new Error('Export failed');
+            let errorMsg = 'Export failed.';
+            try {
+                const data = await response.json();
+                if (data && data.error) errorMsg = data.error;
+            } catch (e) {}
+            throw new Error(errorMsg);
         }
         return response.blob();
     })
@@ -532,10 +537,15 @@ function convertExcelToVcf() {
         method: 'POST',
         body: formData
     })
-    .then(response => {
+    .then(async response => {
         hideElement('excel-loading');
         if (!response.ok) {
-            throw new Error("Conversion failed. Please verify your file contents.");
+            let errorMsg = 'Conversion failed. Please verify your file contents.';
+            try {
+                const data = await response.json();
+                if (data && data.error) errorMsg = data.error;
+            } catch (e) {}
+            throw new Error(errorMsg);
         }
         return response.blob();
     })

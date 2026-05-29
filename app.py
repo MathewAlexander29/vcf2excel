@@ -1,6 +1,10 @@
 import io
 import json
 import logging
+import os
+import socket
+import webbrowser
+from threading import Timer
 from flask import Flask, request, jsonify, send_file, render_template
 from converter import parse_vcf, write_vcf, contacts_to_excel, excel_to_contacts, auto_map_columns
 import openpyxl
@@ -8,6 +12,16 @@ import openpyxl
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Add file handler to write server log file
+try:
+    file_handler = logging.FileHandler('server.log', encoding='utf-8')
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    logging.getLogger().addHandler(file_handler)
+    logger.info("Logging to server.log initialized.")
+except Exception as e:
+    print(f"Failed to initialize file logging: {str(e)}")
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 
@@ -162,6 +176,36 @@ def excel_to_vcf_convert():
         logger.error(f"Error converting Excel to VCF: {str(e)}", exc_info=True)
         return jsonify({'error': f"Failed to convert: {str(e)}"}), 500
 
+def find_free_port(start_port=5000):
+    """Finds an available TCP port starting from start_port."""
+    port = start_port
+    while port < 6000:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            try:
+                s.bind(('127.0.0.1', port))
+                return port
+            except OSError:
+                port += 1
+    return start_port
+
+def open_browser(port):
+    """Opens the local web application in the default browser."""
+    url = f"http://127.0.0.1:{port}"
+    try:
+        if os.name == 'nt':
+            os.system(f'start "" "{url}"')
+        else:
+            webbrowser.open(url)
+    except Exception as e:
+        logger.error(f"Failed to open browser automatically: {str(e)}")
+
 if __name__ == '__main__':
-    # Run locally on port 5000
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    port = find_free_port(5000)
+    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
+    
+    # Start browser timer in parent process only (if in debug/reload mode)
+    if not debug_mode or not os.environ.get("WERKZEUG_RUN_MAIN"):
+        Timer(1.0, open_browser, [port]).start()
+        
+    logger.info(f"Starting server on http://127.0.0.1:{port}")
+    app.run(host='127.0.0.1', port=port, debug=debug_mode)
